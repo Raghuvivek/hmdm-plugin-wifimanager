@@ -42,11 +42,44 @@ public class AllowedItem {
      */
     public boolean wrong = false;
 
+    // EAP-TLS specific fields
+    /**
+     * Client certificate in PEM format.
+     */
+    public String clientCertificate;
+    /**
+     * Client private key in PEM format.
+     */
+    public String privateKey;
+    /**
+     * CA certificate in PEM format.
+     */
+    public String caCertificate;
+
     public AllowedItem() {}
 
     public AllowedItem(String ssid, String bssid, String password) {
         this.ssid = ssid;
         this.bssid = bssid;
         this.password = password;
+    }
+
+    // Constructor for EAP-TLS
+    public AllowedItem(String ssid, String bssid, String clientCertificate, String privateKey, String caCertificate) {
+        this.ssid = ssid;
+        this.bssid = bssid;
+        this.clientCertificate = clientCertificate;
+        this.privateKey = privateKey;
+        this.caCertificate = caCertificate;
+    }
+
+    // Constructor for mixed mode (WPA/WPA2 + EAP-TLS)
+    public AllowedItem(String ssid, String bssid, String password, String clientCertificate, String privateKey, String caCertificate) {
+        this.ssid = ssid;
+        this.bssid = bssid;
+        this.password = password;
+        this.clientCertificate = clientCertificate;
+        this.privateKey = privateKey;
+        this.caCertificate = caCertificate;
     }
 }
