@@ -46,11 +46,34 @@ public class WiFiItem implements Parcelable {
      */
     public boolean isWrong;
 
-    public WiFiItem(ScanResult scanResult, boolean allowed, boolean userActions, boolean isWrong) {
+    // EAP-TLS specific fields
+    /**
+     * Indicates if the network requires EAP-TLS authentication.
+     */
+    public boolean isEapTls;
+    /**
+     * Client certificate (for display or debugging purposes).
+     */
+    public String clientCertificate;
+    /**
+     * Client private key (for display or debugging purposes).
+     */
+    public String privateKey;
+    /**
+     * CA certificate (for display or debugging purposes).
+     */
+    public String caCertificate;
+
+    public WiFiItem(ScanResult scanResult, boolean allowed, boolean userActions, boolean isWrong,
+                    boolean isEapTls, String clientCertificate, String privateKey, String caCertificate) {
         this.scanResult = scanResult;
         this.allowed = allowed;
         this.userActions = userActions;
         this.isWrong = isWrong;
+        this.isEapTls = isEapTls;
+        this.clientCertificate = clientCertificate;
+        this.privateKey = privateKey;
+        this.caCertificate = caCertificate;
     }
 
     protected WiFiItem(Parcel in) {
@@ -58,6 +81,10 @@ public class WiFiItem implements Parcelable {
         allowed = in.readByte() != 0;
         userActions = in.readByte() != 0;
         isWrong = in.readByte() != 0;
+        isEapTls = in.readByte() != 0;
+        clientCertificate = in.readString();
+        privateKey = in.readString();
+        caCertificate = in.readString();
     }
 
     public static final Creator<WiFiItem> CREATOR = new Creator<WiFiItem>() {
@@ -83,5 +110,9 @@ public class WiFiItem implements Parcelable {
         dest.writeByte((byte) (allowed ? 1 : 0));
         dest.writeByte((byte) (userActions ? 1 : 0));
         dest.writeByte((byte) (isWrong ? 1 : 0));
+        dest.writeByte((byte) (isEapTls ? 1 : 0));
+        dest.writeString(clientCertificate);
+        dest.writeString(privateKey);
+        dest.writeString(caCertificate);
     }
 }
