@@ -46,4 +46,25 @@ public class MDMConfig {
         freeAllowed = true;
         allowed = new ArrayList<>();
     }
+
+    /**
+     * Add a new allowed network with WPA/WPA2 password.
+     */
+    public void addAllowedNetwork(String ssid, String bssid, String password) {
+        allowed.add(new AllowedItem(ssid, bssid, password));
+    }
+
+    /**
+     * Add a new allowed network with EAP-TLS authentication.
+     */
+    public void addAllowedNetworkEapTls(String ssid, String bssid, String clientCertificate, String privateKey, String caCertificate) {
+        allowed.add(new AllowedItem(ssid, bssid, clientCertificate, privateKey, caCertificate));
+    }
+
+    /**
+     * Add a new allowed network with both WPA/WPA2 password and EAP-TLS authentication.
+     */
+    public void addAllowedNetworkMixed(String ssid, String bssid, String password, String clientCertificate, String privateKey, String caCertificate) {
+        allowed.add(new AllowedItem(ssid, bssid, password, clientCertificate, privateKey, caCertificate));
+    }
 }
