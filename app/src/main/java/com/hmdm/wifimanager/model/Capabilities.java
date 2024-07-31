@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Describes the parameters of network encryption.
  */
 public class Capabilities {
-    enum AuthMethod {WPA3, WPA2, WPA, OTHER, CCKM, OPEN}
+    enum AuthMethod {WPA3, WPA2, WPA, EAP_TLS, OTHER, CCKM, OPEN}
     enum KeyManagementAlgorithm {IEEE8021X, EAP, PSK, WEP, SAE, OWE, NONE}
     enum ChiperMethod {WEP, TKIP, CCMP, NONE}
     enum TopologyMode {IBSS, BSS, ESS}
@@ -63,9 +63,6 @@ public class Capabilities {
                 tokens.add(matcher.group().replace("[", "").replace("]", ""));
             }
 
-            /*String delimiter="\\s+|]\\s*|\\[\\s*";
-            String [] array = capabilitiesString.split(delimiter);*/
-
             if (tokens.size() > 0) {
                 for (String item : tokens) {
                     if (item.equals("WPS"))
@@ -74,13 +71,12 @@ public class Capabilities {
                         result.topologyMode = TopologyMode.IBSS;
                     else if (item.equals("BSS"))
                         result.topologyMode = TopologyMode.BSS;
-                    else if (item.equals("ESS "))
+                    else if (item.equals("ESS"))
                         result.topologyMode = TopologyMode.ESS;
                     else {
                         if (item.contains("WEP")) {
                             result.capabilities.add(new Capability(AuthMethod.OTHER, KeyManagementAlgorithm.WEP, ChiperMethod.WEP));
-                        }
-                        else {
+                        } else {
                             AuthMethod authMethod = null;
                             if (item.contains("WPA3"))
                                 authMethod = AuthMethod.WPA3;
@@ -101,6 +97,11 @@ public class Capabilities {
                             else if (item.contains("OWE"))
                                 keyManagementAlgorithm = KeyManagementAlgorithm.OWE;
 
+                            // Check for EAP-TLS specifically
+                            if (authMethod == AuthMethod.WPA2 && keyManagementAlgorithm == KeyManagementAlgorithm.EAP && item.contains("TLS")) {
+                                authMethod = AuthMethod.EAP_TLS;
+                            }
+
                             if (item.contains("TKIP") || item.contains("CCMP")) {
                                 if (item.contains("TKIP"))
                                     result.capabilities.add(new Capability(authMethod == null ? AuthMethod.OPEN : authMethod,
@@ -111,8 +112,7 @@ public class Capabilities {
                                     result.capabilities.add(new Capability(authMethod == null ? AuthMethod.OPEN : authMethod,
                                             keyManagementAlgorithm == null ? KeyManagementAlgorithm.NONE : keyManagementAlgorithm,
                                             ChiperMethod.CCMP));
-                            }
-                            else if (authMethod != null || keyManagementAlgorithm != null) {
+                            } else if (authMethod != null || keyManagementAlgorithm != null) {
                                 result.capabilities.add(new Capability(authMethod, keyManagementAlgorithm, ChiperMethod.NONE));
                             }
                         }
@@ -154,8 +154,7 @@ public class Capabilities {
                 else
                     result += "; chiperMethod: null";
             }
-        }
-        else {
+        } else {
             result += "no capabilities";
         }
 
